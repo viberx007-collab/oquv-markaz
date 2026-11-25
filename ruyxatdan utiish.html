@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>O'quv Markazi — Online Ro'yxatdan O'tish va Kirish</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 50%, #eef2ff 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      color: #fff;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .header .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 13.5px;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      padding: 6px;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--card);
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    .content {
+      padding: 24px;
+    }
+
+    .form {
+      display: none;
+    }
+
+    .form.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 44px;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
+
+    .toggle-pass:hover {
+      color: var(--primary);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.05s;
+      margin-top: 6px;
+    }
+
+    .submit-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .submit-btn:active {
+      transform: scale(0.99);
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 14px;
+    }
+
+    /* Shaxsiy Kabinet (Demo) */
+    .cabinet {
+      display: none;
+    }
+
+    .cabinet.active {
+      display: block;
+    }
+
+    .cabinet-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .status-pill {
+      background: #dcfce7;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e2e8f0;
+      font-size: 14px;
+      gap: 12px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: var(--muted);
+    }
+
+    .info-value {
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sec-btn {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .sec-btn:hover {
+      background: #f8fafc;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      max-width: 400px;
+      width: 100%;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: var(--success);
+    }
+
+    .modal p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .id-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="badge">O'QUV MARKAZI PORTALI</span>
+      <h1>BilimYuksalish Akademiyasi</h1>
+      <p>Kurslarga online ro'yxatdan o'ting yoki shaxsiy kabinetga kiring</p>
+    </div>
+
+    <div class="tabs" id="tabsBar">
+      <button type="button" class="tab-btn active" data-tab="register">Ro'yxatdan o'tish</button>
+      <button type="button" class="tab-btn" data-tab="login">Tizimga kirish</button>
+    </div>
+
+    <div class="content">
+      <!-- RO'YXATDAN O'TISH FORMASI -->
+      <form id="registerForm" class="form active" novalidate>
+        <div class="form-group">
+          <label for="regName">Ism va familiya</label>
+          <input type="text" id="regName" placeholder="Masalan: Jasur Karimov" required />
+          <div class="error-msg" id="errName">Ism-familiyani kiriting (kamida 3 ta belgi).</div>
+        </div>
+
+        <div class="form-group">
+          <label for="regPhone">Telefon raqami</label>
+          <input type="tel" id="regPhone" value="+998 " placeholder="+998 90 123 45 67" required />
+          <div class="error-msg" id="errPhone">To'liq telefon raqamini kiriting (+998 XX XXX XX XX).</div>
+        </div>
+
+        <div class="form-group">
+          <label for="regCourse">Kurs yo'nalishi</label>
+          <select id="regCourse" required>
+            <option value="" disabled selected>Kursni tanlang...</option>
+            <option value="Ingliz tili (IELTS / General)">Ingliz tili (IELTS / General)</option>
+            <option value="IT va Dasturlash (Frontend / Python)">IT va Dasturlash (Frontend / Python)</option>
+            <option value="Matematika (DTM / Milliy sertifikat)">Matematika (DTM / Milliy sertifikat)</option>
+            <option value="Koreys tili (TOPIK)">Koreys tili (TOPIK)</option>
+            <option value="Grafik dizayn">Grafik dizayn</option>
+          </select>
+          <div class="error-msg" id="errCourse">Kurs yo'nalishini tanlang.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="regTime">Qulay dars vaqti</label>
+          <select id="regTime" required>
+            <option value="" disabled selected>Vaqtni tanlang...</option>
+            <option value="Ertalabki (09:00 - 12:00)">Ertalabki (09:00 - 12:00)</option>
+            <option value="Kunduzgi (13:00 - 16:00)">Kunduzgi (13:00 - 16:00)</option>
+            <option value="Kechki (16:30 - 19:30)">Kechki (16:30 - 19:30)</option>
+          </select>
+          <div class="error-msg" id="errTime">O'quv vaqtini tanlang.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="regPassword">Parol yarating</label>
+          <div class="password-wrap">
+            <input type="password" id="regPassword" placeholder="Kamida 6 ta belgi" required />
+            <button type="button" class="toggle-pass" data-target="regPassword">Ko'rsatish</button>
+          </div>
+          <div class="error-msg" id="errPass">Parol kamida 6 ta belgidan iborat bo'lsin.</div>
+        </div>
+
+        <button type="submit" class="submit-btn">Ro'yxatdan o'tish</button>
+        <p class="hint">Ro'yxatdan o'tgach sinov darsi uchun shaxsiy ID beriladi.</p>
+      </form>
+
+      <!-- KIRISH FORMASI -->
+      <form id="loginForm" class="form" novalidate>
+        <div class="form-group">
+          <label for="loginPhone">Telefon raqami</label>
+          <input type="tel" id="loginPhone" value="+998 " placeholder="+998 90 123 45 67" required />
+          <div class="error-msg" id="errLoginPhone">Telefon raqamini to'liq kiriting.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Parol</label>
+          <div class="password-wrap">
+            <input type="password" id="loginPassword" placeholder="Parolingizni kiriting" required />
+            <button type="button" class="toggle-pass" data-target="loginPassword">Ko'rsatish</button>
+          </div>
+          <div class="error-msg" id="errLoginPass">Parolni kiriting.</div>
+        </div>
+
+        <button type="submit" class="submit-btn">Kabinetga kirish</button>
+        <p class="hint">Oldin ro'yxatdan o'tgan raqam yoki istalgan ma'lumot bilan demo kirish mumkin.</p>
+      </form>
+
+      <!-- SHAXSIY O'QUVCHI KABINETI (DEMO) -->
+      <div id="cabinet" class="cabinet">
+        <div class="cabinet-top">
+          <div>
+            <h3 id="cabName">O'quvchi Ismi</h3>
+            <small id="cabPhone" style="color: var(--muted);">+998 90 000 00 00</small>
+          </div>
+          <span class="status-pill">Ro'yxatda</span>
+        </div>
+
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">O'quvchi ID:</span>
+            <span class="info-value" id="cabId">STU-2026-001</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Tanlangan kurs:</span>
+            <span class="info-value" id="cabCourse">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dars vaqti:</span>
+            <span class="info-value" id="cabTime">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Sinov darsi:</span>
+            <span class="info-value" style="color: var(--success);">Bepul (Tasdiqlangan)</span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="sec-btn" id="copyInfoBtn">Ma'lumotni nusxalash</button>
+          <button type="button" class="sec-btn" id="logoutBtn">Chiqish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABRIKLASH MODALI -->
+  <div class="modal-backdrop" id="successModal">
+    <div class="modal">
+      <h2>Tabriklaymiz!</h2>
+      <p>Siz o'quv markazimizga muvaffaqiyatli ro'yxatdan o'tdingiz. Administrator tez orada bog'lanadi.</p>
+      <div class="id-box" id="modalStudentId">ID: STU-2026-000</div>
+      <button type="button" class="submit-btn" id="openCabinetBtn">Shaxsiy kabinetga o'tish</button>
+    </div>
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const registerForm = document.getElementById("registerForm");
+    const loginForm = document.getElementById("loginForm");
+    const cabinet = document.getElementById("cabinet");
+    const tabsBar = document.getElementById("tabsBar");
+    const successModal = document.getElementById("successModal");
+
+    let currentStudent = null;
+
+    // Tab almashish
+    tabBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        tabBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const target = btn.dataset.tab;
+        registerForm.classList.toggle("active", target === "register");
+        loginForm.classList.toggle("active", target === "login");
+      });
+    });
+
+    // +998 XX XXX XX XX formatlash
+    function formatUzPhone(input) {
+      let digits = input.value.replace(/\D/g, "");
+      if (!digits.startsWith("998")) {
+        digits = "998" + digits.replace(/^998/, "");
+      }
+      digits = digits.slice(0, 12);
+
+      let formatted = "+998";
+      if (digits.length > 3) formatted += " " + digits.slice(3, 5);
+      if (digits.length > 5) formatted += " " + digits.slice(5, 8);
+      if (digits.length > 8) formatted += " " + digits.slice(8, 10);
+      if (digits.length > 10) formatted += " " + digits.slice(10, 12);
+
+      input.value = formatted;
+    }
+
+    ["regPhone", "loginPhone"].forEach((id) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => formatUzPhone(el));
+      el.addEventListener("focus", () => {
+        if (!el.value.startsWith("+998")) el.value = "+998 ";
+      });
+    });
+
+    // Parolni ko'rsatish / yashirish
+    document.querySelectorAll(".toggle-pass").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.target);
+        const isPass = input.type === "password";
+        input.type = isPass ? "text" : "password";
+        btn.textContent = isPass ? "Yashirish" : "Ko'rsatish";
+      });
+    });
+
+    function toggleError(id, show) {
+      document.getElementById(id).style.display = show ? "block" : "none";
+    }
+
+    // Ro'yxatdan o'tish
+    registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+      const course = document.getElementById("regCourse").value;
+      const time = document.getElementById("regTime").value;
+      const pass = document.getElementById("regPassword").value;
+
+      const nameOk = name.length >= 3;
+      const phoneOk = phone.length === 17; // +998 XX XXX XX XX
+      const courseOk = Boolean(course);
+      const timeOk = Boolean(time);
+      const passOk = pass.length >= 6;
+
+      toggleError("errName", !nameOk);
+      toggleError("errPhone", !phoneOk);
+      toggleError("errCourse", !courseOk);
+      toggleError("errTime", !timeOk);
+      toggleError("errPass", !passOk);
+
+      if (!nameOk || !phoneOk || !courseOk || !timeOk || !passOk) return;
+
+      const randomNum = Math.floor(100 + Math.random() * 900);
+      currentStudent = {
+        id: `STU-2026-${randomNum}`,
+        name,
+        phone,
+        course,
+        time,
+      };
+
+      localStorage.setItem("demoStudent", JSON.stringify(currentStudent));
+      document.getElementById("modalStudentId").textContent = `ID: ${currentStudent.id}`;
+      successModal.classList.add("open");
+    });
+
+    // Kabinetni ko'rsatish
+    function renderCabinet(student) {
+      document.getElementById("cabName").textContent = student.name;
+      document.getElementById("cabPhone").textContent = student.phone;
+      document.getElementById("cabId").textContent = student.id;
+      document.getElementById("cabCourse").textContent = student.course;
+      document.getElementById("cabTime").textContent = student.time;
+
+      registerForm.classList.remove("active");
+      loginForm.classList.remove("active");
+      tabsBar.style.display = "none";
+      cabinet.classList.add("active");
+    }
+
+    document.getElementById("openCabinetBtn").addEventListener("click", () => {
+      successModal.classList.remove("open");
+      if (currentStudent) renderCabinet(currentStudent);
+    });
+
+    // Tizimga kirish
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const phone = document.getElementById("loginPhone").value.trim();
+      const pass = document.getElementById("loginPassword").value;
+
+      const phoneOk = phone.length === 17;
+      const passOk = pass.length >= 1;
+
+      toggleError("errLoginPhone", !phoneOk);
+      toggleError("errLoginPass", !passOk);
+      if (!phoneOk || !passOk) return;
+
+      const saved = JSON.parse(localStorage.getItem("demoStudent") || "null");
+      if (saved && saved.phone === phone) {
+        currentStudent = saved;
+      } else {
+        currentStudent = {
+          id: "STU-2026-842",
+          name: "Aziza Rustamova",
+          phone,
+          course: "Ingliz tili (IELTS / General)",
+          time: "Kunduzgi (13:00 - 16:00)",
+        };
+      }
+      renderCabinet(currentStudent);
+    });
+
+    // Ma'lumotni nusxalash
+    document.getElementById("copyInfoBtn").addEventListener("click", async () => {
+      if (!currentStudent) return;
+      const text = `ID: ${currentStudent.id}\nIsm: ${currentStudent.name}\nTel: ${currentStudent.phone}\nKurs: ${currentStudent.course}\nVaqt: ${currentStudent.time}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById("copyInfoBtn");
+        const old = btn.textContent;
+        btn.textContent = "Nusxalandi!";
+        setTimeout(() => (btn.textContent = old), 1500);
+      } catch {
+        alert("Nusxalashda xatolik bo'ldi.");
+      }
+    });
+
+    // Chiqish
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      cabinet.classList.remove("active");
+      tabsBar.style.display = "grid";
+      document.querySelector('[data-tab="login"]').click();
+    });
+  </script>
+</body>
+</html>           
